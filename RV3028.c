@@ -274,7 +274,6 @@ void clearInterruptFlags(uint8_t clearTimerFlag, uint8_t clearAlarmFlag, uint8_t
 void useEEPROM(uint8_t disableRefresh){
     if (disableRefresh){
         andOrRegister(CONTROL1_REGISTER_ADDRESS, 0xFF, 0x08);
-        writeToRegister(EEPROM_COMMAND_ADDRESS, 0);
     }
     else
         andOrRegister(CONTROL1_REGISTER_ADDRESS, 0xF7, 0);
@@ -288,11 +287,17 @@ uint8_t isEEPROMBusy(){
  * user eeprom address space : [0x00 - 0x2A]
  * configuration eeprom address space : [0x30 - 0x37] */
 uint8_t readEEPROMRegister(uint8_t registerAddress){
-    writeToRegister(EEPROM_ADDRESS_ADDRESS, registerAddress);
-    //while (isEEPROMBusy());
+    useEEPROM(1);
 
+    while (isEEPROMBusy());
+    // data sheet indicates that before any other command a 0 must be written 
+    writeToRegister(EEPROM_COMMAND_ADDRESS, 0);
+
+    while (isEEPROMBusy());
     // read a register -> eeprom data = 0x22
+    writeToRegister(EEPROM_ADDRESS_ADDRESS, registerAddress);
     writeToRegister(EEPROM_COMMAND_ADDRESS, 0x22);
+    while (isEEPROMBusy());
     return readFromRegister(EEPROM_DATA_ADDRESS);
 }
 
@@ -300,9 +305,17 @@ uint8_t readEEPROMRegister(uint8_t registerAddress){
  * user eeprom address space : [0x00 - 0x2A]
  * configuration eeprom address space : [0x30 - 0x37] */
 void writeEEPROMRegister(uint8_t registerAddress, uint8_t value){
+    useEEPROM(1);
+
+    while (isEEPROMBusy());
+    
+    // data sheet indicates that before any other command a 0 must be written 
+    writeToRegister(EEPROM_COMMAND_ADDRESS, 0);
+
+    while (isEEPROMBusy());
+
     writeToRegister(EEPROM_ADDRESS_ADDRESS, registerAddress);
     writeToRegister(EEPROM_DATA_ADDRESS, value);
-    //while (isEEPROMBusy());
 
     // write to a register in eeprom = 0x21
     writeToRegister(EEPROM_COMMAND_ADDRESS, 0x21);
