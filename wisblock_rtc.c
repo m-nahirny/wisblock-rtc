@@ -68,6 +68,37 @@ int main() {
     // Note: month value ranges from 1 (Jan) to 12 (Dec)
     // Note: date value ranges from 1 to 31
 
+
+    uint8_t val2 = 0;
+    uart_puts(uart1, "Read values from EEPROM: ");
+    val2 = readEEPROMRegister(1);
+    sprintf(print_buf, "%02x", val2);
+    uart_puts(uart1, print_buf);
+    val2 = readEEPROMRegister(2);
+    sprintf(print_buf, "%02x", val2);
+    uart_puts(uart1, print_buf);
+    val2 = readEEPROMRegister(3);
+    sprintf(print_buf, "%02x", val2);
+    uart_puts(uart1, print_buf);
+    val2 = readEEPROMRegister(4);
+    sprintf(print_buf, "%02x", val2);
+    uart_puts(uart1, print_buf);
+    val2 = readEEPROMRegister(5);
+    sprintf(print_buf, "%02x", val2);
+    uart_puts(uart1, print_buf);
+    val2 = readEEPROMRegister(6);
+    sprintf(print_buf, "%02x", val2);
+    uart_puts(uart1, print_buf);
+    uart_puts(uart1, "\r\n");
+
+    uart_puts(uart1, "Writing to EEPROM\r\n");
+    writeEEPROMRegister(1, 0x12);
+    writeEEPROMRegister(2, 0x34);
+    writeEEPROMRegister(3, 0x56);
+    writeEEPROMRegister(4, 0xAB);
+    writeEEPROMRegister(5, 0xCD);
+    writeEEPROMRegister(6, 0xEF);
+
     while (1) {
         gpio_put(LED_GREEN, 1);
         gpio_put(IO1, 1);
